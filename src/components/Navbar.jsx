@@ -22,7 +22,7 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center space-x-8">
             <Link
-              to="/home"
+              to="/"
               className="group text-sm font-semibold text-gray-700 hover:text-blue-600 transition-all duration-300 relative"
             >
               Home
