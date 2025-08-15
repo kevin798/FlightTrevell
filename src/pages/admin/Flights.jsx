@@ -314,9 +314,24 @@ const Flights = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Format the data according to the API requirements
+      const formattedData = {
+        airline: newFlight.airline,
+        flight_number: newFlight.flight_number,
+        origin_airport_id: newFlight.origin.id,
+        destination_airport_id: newFlight.destination.id,
+        departure_time: newFlight.departure_time,
+        arrival_time: newFlight.arrival_time,
+        classes: newFlight.classes.map((cls) => ({
+          id: cls.id,
+          price: cls.price,
+          available_seats: cls.available_seats,
+        })),
+      };
+
       const response = await axios.post(
         "http://localhost:8000/api/flights",
-        newFlight,
+        formattedData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -328,22 +343,70 @@ const Flights = () => {
       if (response.data.meta.code === 200) {
         await fetchFlights(); // Refresh the flights list
         setShowForm(false);
+        // Clear any existing errors
+        setError(null);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add new flight");
+      // Handle validation errors
+      if (err.response?.status === 422) {
+        const validationErrors = err.response.data.errors;
+        const errorMessage = err.response.data.message;
+
+        // Set a user-friendly error message
+        setError(
+          errorMessage ||
+            Object.values(validationErrors || {})
+              .flat()
+              .join(", ") ||
+            "Validation failed. Please check your input."
+        );
+      } else {
+        setError("Failed to add new flight. Please try again later.");
+      }
       console.error("Error adding flight:", err);
     }
 
     // Reset form
     setNewFlight({
-      id: "",
       airline: "",
-      from: "",
-      to: "",
-      departure: "",
-      arrival: "",
-      price: "",
-      status: "Aktif",
+      flight_number: "",
+      origin: {
+        id: "",
+        code: "",
+        name: "",
+        city: "",
+        country: "Indonesia",
+      },
+      destination: {
+        id: "",
+        code: "",
+        name: "",
+        city: "",
+        country: "Indonesia",
+      },
+      departure_time: "",
+      arrival_time: "",
+      available_seats: "",
+      classes: [
+        {
+          id: 1,
+          name: "ekonomi",
+          price: "",
+          available_seats: "",
+        },
+        {
+          id: 2,
+          name: "bisnis",
+          price: "",
+          available_seats: "",
+        },
+        {
+          id: 3,
+          name: "first class",
+          price: "",
+          available_seats: "",
+        },
+      ],
     });
   };
 
@@ -568,6 +631,32 @@ const Flights = () => {
                   Isi detail penerbangan dengan lengkap
                 </p>
               </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg
+                        className="h-5 w-5 text-red-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-red-800">
+                        Error
+                      </h3>
+                      <div className="mt-2 text-sm text-red-700">{error}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
