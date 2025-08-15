@@ -88,7 +88,7 @@ const Sidebar = () => {
         <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
           <span className="text-blue-900 font-bold text-xl">F</span>
         </div>
-        {!isCollapsed && <span className="font-bold text-xl">FlyTravell</span>}
+        {!isCollapsed && <span className="font-bold text-xl">FlightTravel</span>}
       </div>
 
       {/* Navigation */}
