@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 
 const Flights = () => {
-  const flights = [
+  const [flights, setFlights] = useState([
     {
       id: "FL001",
       airline: "Garuda Indonesia",
@@ -33,7 +33,39 @@ const Flights = () => {
       price: 800000,
       status: "Penuh",
     },
-  ];
+  ]);
+
+  const [showForm, setShowForm] = useState(false);
+  const [newFlight, setNewFlight] = useState({
+    id: "",
+    airline: "",
+    from: "",
+    to: "",
+    departure: "",
+    arrival: "",
+    price: "",
+    status: "Aktif",
+  });
+
+  const handleChange = (e) => {
+    setNewFlight({ ...newFlight, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setFlights([...flights, { ...newFlight, price: Number(newFlight.price) }]);
+    setShowForm(false);
+    setNewFlight({
+      id: "",
+      airline: "",
+      from: "",
+      to: "",
+      departure: "",
+      arrival: "",
+      price: "",
+      status: "Aktif",
+    });
+  };
 
   return (
     <div className="p-6">
@@ -42,7 +74,10 @@ const Flights = () => {
         <h1 className="text-3xl font-bold text-gray-800">
           Manajemen Penerbangan
         </h1>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors">
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
+        >
           <Plus className="w-5 h-5 mr-2" />
           Tambah Penerbangan
         </button>
@@ -76,81 +111,37 @@ const Flights = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                ID
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Maskapai
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Dari
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Ke
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Berangkat
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Tiba
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Harga
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Aksi
-              </th>
+              <th className="px-6 py-3">ID</th>
+              <th className="px-6 py-3">Maskapai</th>
+              <th className="px-6 py-3">Dari</th>
+              <th className="px-6 py-3">Ke</th>
+              <th className="px-6 py-3">Berangkat</th>
+              <th className="px-6 py-3">Tiba</th>
+              <th className="px-6 py-3">Harga</th>
+              <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {flights.map((flight) => (
               <tr key={flight.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">{flight.id}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {flight.airline}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {flight.from}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">{flight.to}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {flight.departure}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {flight.arrival}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                <td className="px-6 py-4">{flight.id}</td>
+                <td className="px-6 py-4">{flight.airline}</td>
+                <td className="px-6 py-4">{flight.from}</td>
+                <td className="px-6 py-4">{flight.to}</td>
+                <td className="px-6 py-4">{flight.departure}</td>
+                <td className="px-6 py-4">{flight.arrival}</td>
+                <td className="px-6 py-4">
                   Rp {flight.price.toLocaleString("id-ID")}
                 </td>
-                <td className="px-6 py-4 text-sm">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      flight.status === "Aktif"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {flight.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="text-blue-600 hover:text-blue-800"
-                      title="Edit"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-800"
-                      title="Hapus"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                <td className="px-6 py-4">{flight.status}</td>
+                <td className="px-6 py-4 flex gap-2">
+                  <button className="text-blue-600 hover:text-blue-800">
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button className="text-red-600 hover:text-red-800">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -161,17 +152,96 @@ const Flights = () => {
       {/* Pagination */}
       <div className="flex justify-between items-center mt-6">
         <p className="text-sm text-gray-600">
-          Menampilkan 1 - 3 dari 50 penerbangan
+          Menampilkan {flights.length} dari {flights.length} penerbangan
         </p>
-        <div className="flex gap-2">
-          <button className="px-4 py-2 border rounded-lg hover:bg-gray-50">
-            Previous
-          </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            Next
-          </button>
-        </div>
       </div>
+
+      {/* Modal Tambah Penerbangan */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-6 rounded-lg shadow-lg w-96"
+          >
+            <h2 className="text-xl font-bold mb-4">Tambah Penerbangan</h2>
+            <input
+              name="id"
+              placeholder="ID"
+              value={newFlight.id}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-2"
+            />
+            <input
+              name="airline"
+              placeholder="Maskapai"
+              value={newFlight.airline}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-2"
+            />
+            <input
+              name="from"
+              placeholder="Dari"
+              value={newFlight.from}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-2"
+            />
+            <input
+              name="to"
+              placeholder="Ke"
+              value={newFlight.to}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-2"
+            />
+            <input
+              name="departure"
+              placeholder="Berangkat"
+              value={newFlight.departure}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-2"
+            />
+            <input
+              name="arrival"
+              placeholder="Tiba"
+              value={newFlight.arrival}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-2"
+            />
+            <input
+              type="number"
+              name="price"
+              placeholder="Harga"
+              value={newFlight.price}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-2"
+            />
+            <select
+              name="status"
+              value={newFlight.status}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full mb-4"
+            >
+              <option value="Aktif">Aktif</option>
+              <option value="Penuh">Penuh</option>
+              <option value="Dibatalkan">Dibatalkan</option>
+            </select>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 bg-gray-300 rounded-lg"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+              >
+                Simpan
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

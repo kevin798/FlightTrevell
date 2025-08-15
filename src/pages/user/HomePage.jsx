@@ -11,9 +11,7 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100">
-      {/* Hero Section with Enhanced Styling */}
       <div className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white py-20 px-4 text-center shadow-2xl overflow-hidden">
-        {/* Animated Background Blobs */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
           <div className="absolute top-0 right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2s"></div>
@@ -41,7 +39,6 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Services Section */}
       <div className="container mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-12 animate-fade-in-up">
           <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -49,7 +46,6 @@ const HomePage = () => {
           </span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Flight Card */}
           <div className="group bg-white rounded-2xl shadow-xl p-8 text-center transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:-translate-y-2 animate-fade-in-up animation-delay-200ms relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left opacity-0 group-hover:opacity-10"></div>
             <div className="relative z-10">

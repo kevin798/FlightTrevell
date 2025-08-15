@@ -31,22 +31,28 @@ const LoginForm = ({ onLoginSuccess, onSwitchToRegister }) => {
     try {
       const res = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
+      console.log('Data login:', data); // Debugging
 
       if (res.ok) {
         setSuccess('Login berhasil!');
-        // ✅ Gunakan access_token dari response
-        localStorage.setItem('token', data.access_token || '');
 
-        // Redirect ke halaman home
+        // Simpan token dan role
+        localStorage.setItem('token', data.token || '');
+        localStorage.setItem('role', data.role || 'user');
+
         onLoginSuccess?.();
-        navigate('/home');
+
+        // Cek role admin (case-insensitive)
+        if (data.role?.toLowerCase() === 'Admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/');
+        }
       } else {
         setError(data.message || 'Username atau password salah.');
       }

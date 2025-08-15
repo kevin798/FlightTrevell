@@ -267,7 +267,6 @@ const FlightBookingForm = () => {
               />
             </div>
 
-            {/* Passengers */}
             <div className="group">
               <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg flex items-center justify-center mr-3">
@@ -294,7 +293,6 @@ const FlightBookingForm = () => {
             </div>
           </div>
 
-          {/* Enhanced Submit Button */}
           <div className="pt-4">
             <button
               type="submit"
@@ -303,7 +301,7 @@ const FlightBookingForm = () => {
                 isLoading ? "animate-pulse" : ""
               }`}
             >
-              {/* Button Background Animation */}
+
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
               
               {isLoading ? (
@@ -341,7 +339,6 @@ const FlightBookingForm = () => {
           </div>
         </form>
 
-        {/* Additional Info */}
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="flex items-center justify-center text-sm text-gray-600">

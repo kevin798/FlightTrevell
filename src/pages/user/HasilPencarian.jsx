@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaPlane,
   FaClock,
-  FaTag,
   FaUserFriends,
   FaCalendarAlt,
   FaMapMarkerAlt,
@@ -14,9 +13,14 @@ const HasilPencarian = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { from, to, date, passengers } = location.state || {};
+
   const steps = ["Pilih Tiket", "Pilih Kursi", "Pembayaran"];
 
-  const flights = [
+  const [flights, setFlights] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fallback data jika API gagal
+  const fallbackFlights = [
     {
       id: 1,
       airline: "Garuda Indonesia",
@@ -43,6 +47,27 @@ const HasilPencarian = () => {
     },
   ];
 
+  useEffect(() => {
+    const fetchFlights = async () => {
+      try {
+        const query = `?from=${from}&to=${to}&date=${date}`;
+        const res = await fetch(`http://localhost:8000/api/flights${query}`);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const result = await res.json();
+        setFlights(Array.isArray(result.data) ? result.data : []);
+      } catch (err) {
+        console.error("Gagal mengambil data penerbangan", err);
+        setFlights(fallbackFlights);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFlights();
+  }, [from, to, date]);
+
   const getFormattedDate = (dateString) => {
     if (!dateString) return "Tanggal tidak diketahui";
     const options = {
@@ -54,9 +79,17 @@ const HasilPencarian = () => {
     return new Date(dateString).toLocaleDateString("id-ID", options);
   };
 
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <p>Loading data penerbangan...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 bg-gray-100 min-h-screen">
-          <ProgressStep steps={steps} currentStep={0} />
+      <ProgressStep steps={steps} currentStep={0} />
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-extrabold text-gray-800">
           Hasil Pencarian
@@ -110,45 +143,51 @@ const HasilPencarian = () => {
       </div>
 
       <div className="space-y-6">
-        {flights.map((flight) => (
-          <div
-            key={flight.id}
-            className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center transition-transform duration-300 transform hover:scale-[1.01] hover:shadow-2xl"
-          >
-            <div className="flex items-center w-full md:w-auto mb-4 md:mb-0">
-              <div className="mr-6">
-                <FaPlane className="text-4xl text-blue-600" />
-              </div>
-              <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-8">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-800">
-                    {flight.airline}
-                  </h3>
-                  <p className="text-sm text-gray-500">{flight.code}</p>
+        {flights.length === 0 ? (
+          <p className="text-center text-gray-500">Tidak ada penerbangan ditemukan</p>
+        ) : (
+          flights.map((flight) => (
+            <div
+              key={flight.id}
+              className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center transition-transform duration-300 transform hover:scale-[1.01] hover:shadow-2xl"
+            >
+              <div className="flex items-center w-full md:w-auto mb-4 md:mb-0">
+                <div className="mr-6">
+                  <FaPlane className="text-4xl text-blue-600" />
                 </div>
-                <div className="flex items-center space-x-2 text-gray-700">
-                  <FaClock className="text-lg" />
-                  <p className="font-semibold">{flight.time}</p>
-                  <p className="text-sm text-gray-500 ml-2">
-                    ({flight.duration})
-                  </p>
+                <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-8">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800">
+                      {flight.airline}
+                    </h3>
+                    <p className="text-sm text-gray-500">{flight.code}</p>
+                  </div>
+                  <div className="flex items-center space-x-2 text-gray-700">
+                    <FaClock className="text-lg" />
+                    <p className="font-semibold">{flight.time}</p>
+                    <p className="text-sm text-gray-500 ml-2">
+                      ({flight.duration})
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="text-center md:text-right w-full md:w-auto">
-              <p className="text-2xl font-extrabold text-blue-600 mb-2">
-                Rp {flight.price.toLocaleString("id-ID")}
-              </p>
-              <button
-                onClick={() => navigate("/pilih-kursi", { state: { flight } })}
-                className="w-full md:w-auto bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-700 transition"
-              >
-                Pilih
-              </button>
+              <div className="text-center md:text-right w-full md:w-auto">
+                <p className="text-2xl font-extrabold text-blue-600 mb-2">
+                  Rp {flight.price.toLocaleString("id-ID")}
+                </p>
+                <button
+                  onClick={() =>
+                    navigate("/pilih-kursi", { state: { flight } })
+                  }
+                  className="w-full md:w-auto bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-700 transition"
+                >
+                  Pilih
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
