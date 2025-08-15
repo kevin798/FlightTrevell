@@ -43,9 +43,30 @@ const Sidebar = () => {
     },
   ];
 
-  const handleLogout = () => {
-    // TODO: Implement logout logic
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8000/api/auth/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        // Clear all auth related data from localStorage
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("role");
+
+        navigate("/"); // Redirect to public homepage
+      } else {
+        console.error("Logout failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Gagal logout:", error);
+    }
   };
 
   return (

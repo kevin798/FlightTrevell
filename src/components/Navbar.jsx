@@ -40,17 +40,27 @@ const Navbar = () => {
 
   const handleLogout = useCallback(async () => {
     try {
-      await fetch("http://localhost:8000/api/auth/logout", {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8000/api/auth/logout", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      setIsLoggedIn(false);
-      navigate("/login");
+
+      if (response.ok) {
+        // Clear all auth related data from localStorage
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("role");
+
+        setIsLoggedIn(false);
+        setUserName("");
+        navigate("/"); // Redirect to public homepage
+      } else {
+        console.error("Logout failed:", response.statusText);
+      }
     } catch (error) {
       console.error("Gagal logout:", error);
     }
@@ -70,10 +80,18 @@ const Navbar = () => {
 
           {/* Menu navigasi */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/pesawat" className="nav-link">Pesawat</Link>
-            <Link to="/hotel" className="nav-link">Hotel</Link>
-            <Link to="#" className="nav-link">Transportasi</Link>
+            <Link to="/" className="nav-link">
+              Home
+            </Link>
+            <Link to="/pesawat" className="nav-link">
+              Pesawat
+            </Link>
+            <Link to="/hotel" className="nav-link">
+              Hotel
+            </Link>
+            <Link to="#" className="nav-link">
+              Transportasi
+            </Link>
           </div>
 
           {/* Login/Register atau Profile */}

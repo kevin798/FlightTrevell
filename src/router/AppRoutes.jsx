@@ -6,6 +6,7 @@ import AuthForm from "../pages/auth/AuthForm";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
+import ProtectedAdminRoute from "../components/ProtectedAdminRoute";
 
 const AppRoutes = () => {
   return (
@@ -16,16 +17,18 @@ const AppRoutes = () => {
         <Route path="/login" element={<AuthForm />} />
         <Route path="/register" element={<AuthForm />} />
 
-        {/* Admin Routes with Sidebar */}
+        {/* Admin Routes with Sidebar - Protected */}
         <Route
           path="/admin/*"
           element={
-            <div className="flex">
-              <Sidebar />
-              <div className="flex-1">
-                <AdminRoutes />
+            <ProtectedAdminRoute>
+              <div className="flex">
+                <Sidebar />
+                <div className="flex-1">
+                  <AdminRoutes />
+                </div>
               </div>
-            </div>
+            </ProtectedAdminRoute>
           }
         />
 

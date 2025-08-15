@@ -1,64 +1,66 @@
-import React, { useState } from 'react';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import React, { useState } from "react";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const isValidPassword = (password) => password.length >= 6;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     if (!name.trim()) {
-      setError('Nama wajib diisi.');
+      setError("Nama wajib diisi.");
       return;
     }
 
     if (!isValidEmail(email)) {
-      setError('Email tidak valid.');
+      setError("Email tidak valid.");
       return;
     }
 
     if (!isValidPassword(password)) {
-      setError('Password minimal 6 karakter.');
+      setError("Password minimal 6 karakter.");
       return;
     }
 
     try {
-      const res = await fetch('http://localhost:8000/api/auth/registrasi', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("http://localhost:8000/api/auth/registrasi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
       if (res.ok) {
-        setSuccess('Registrasi berhasil!');
+        setSuccess("Registrasi berhasil!");
         onRegisterSuccess();
       } else {
-        setError(data.message || 'Gagal registrasi.');
+        setError(data.message || "Gagal registrasi.");
       }
     } catch (err) {
-      setError('Gagal menghubungi server.');
+      setError("Gagal menghubungi server.");
     }
   };
 
   const inputClasses =
-    'w-full px-0 py-2 text-gray-300 bg-transparent border-b border-blue-400 focus:outline-none focus:border-blue-600 dark:text-gray-300';
+    "w-full px-4 py-3 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all duration-300";
   const buttonClasses =
-    'w-full py-2 px-4 rounded-md text-white font-semibold transition-colors duration-300 bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1';
+    "w-full py-3 px-4 rounded-lg text-white font-semibold transition-all duration-500 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transform hover:scale-105 active:scale-[0.98] shadow-lg hover:shadow-xl";
 
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold text-center mb-6 text-white">REGISTER</h2>
+      <h2 className="text-3xl font-bold text-center mb-6 text-white">
+        REGISTER
+      </h2>
 
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md mb-4 animate-fadeIn">
@@ -73,7 +75,10 @@ const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }) => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-2 text-gray-400">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium mb-2 text-gray-400"
+          >
             Nama Lengkap
           </label>
           <input
@@ -88,7 +93,10 @@ const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }) => {
         </div>
 
         <div>
-          <label htmlFor="registerEmail" className="block text-sm font-medium mb-2 text-gray-400">
+          <label
+            htmlFor="registerEmail"
+            className="block text-sm font-medium mb-2 text-gray-400"
+          >
             Email
           </label>
           <input
@@ -103,11 +111,14 @@ const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }) => {
         </div>
 
         <div className="relative">
-          <label htmlFor="registerPassword" className="block text-sm font-medium mb-2 text-gray-400">
+          <label
+            htmlFor="registerPassword"
+            className="block text-sm font-medium mb-2 text-gray-400"
+          >
             Password
           </label>
           <input
-            type={isPasswordVisible ? 'text' : 'password'}
+            type={isPasswordVisible ? "text" : "password"}
             id="registerPassword"
             className={inputClasses}
             placeholder="******"
@@ -135,7 +146,7 @@ const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }) => {
       </form>
 
       <p className="text-center mt-4 text-gray-400">
-        Sudah punya akun?{' '}
+        Sudah punya akun?{" "}
         <button
           type="button"
           onClick={onSwitchToLogin}
