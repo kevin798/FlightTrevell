@@ -6,6 +6,7 @@ import SearchResults from "../pages/user/HasilPencarian";
 import PilihKursi from "../pages/user/PilihKursi";
 import Pembayaran from "../pages/user/Pembayaran";
 import HotelBookingPage from "../pages/user/HotelBookingPage";
+import Profile from "../pages/user/Profile";
 
 const UserRoutes = () => (
   <Routes>
@@ -15,6 +16,7 @@ const UserRoutes = () => (
     <Route path="/pilih-kursi" element={<PilihKursi />} />
     <Route path="/pembayaran" element={<Pembayaran />} />
     <Route path="/hotel" element={<HotelBookingPage />} />
+    <Route path="/profile" element={<Profile />} />
   </Routes>
 );
 

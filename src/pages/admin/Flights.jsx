@@ -1,227 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2 } from "lucide-react";
-import axios from "axios";
+import { useState, useEffect } from "react"
+import { Plus, Edit2, Trash2, Search, Filter, Plane, Clock, Users, MapPin } from "lucide-react"
+import axios from "axios"
 
 const Flights = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [flights, setFlights] = useState([]);
-  const [airports, setAirports] = useState([]);
-
-  const fetchFlights = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await axios.get(
-        "http://localhost:8000/api/public/flights"
-      );
-      if (response.data.meta.code === 200) {
-        setFlights(response.data.data);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch flights data");
-      console.error("Error fetching flights:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchAirports = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8000/api/public/airports"
-      );
-      if (response.data.meta.code === 200) {
-        setAirports(response.data.data);
-      }
-    } catch (err) {
-      console.error("Error fetching airports:", err);
-      setError(err.response?.data?.message || "Failed to fetch airports data");
-    }
-  };
-
-  useEffect(() => {
-    fetchFlights();
-    fetchAirports();
-  }, []);
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus penerbangan ini?")) {
-      try {
-        const response = await axios.delete(
-          `http://localhost:8000/api/flights/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        if (response.data.meta.code === 200) {
-          await fetchFlights(); // Refresh the flights list
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || "Gagal menghapus penerbangan");
-        console.error("Error deleting flight:", err);
-      }
-    }
-  };
-
-  const handleEdit = async (id) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/flights/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (response.data.meta.code === 200) {
-        setNewFlight(response.data.data);
-        setShowForm(true);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "Gagal memuat data penerbangan");
-      console.error("Error fetching flight details:", err);
-    }
-  };
-
-  // Dummy data for initial state
-  const [dummyFlights, setDummyFlights] = useState([
-    {
-      id: 1,
-      airline: "Garuda Indonesia",
-      flight_number: "GA123",
-      origin: {
-        id: 1,
-        code: "CGK",
-        name: "Soekarno-Hatta International Airport",
-        city: "Jakarta",
-        country: "Indonesia",
-      },
-      destination: {
-        id: 3,
-        code: "SUB",
-        name: "Juanda International Airport",
-        city: "Surabaya",
-        country: "Indonesia",
-      },
-      departure_time: "2025-08-20 08:00:00",
-      arrival_time: "2025-08-20 10:00:00",
-      price: "1500000.00",
-      available_seats: 170,
-      classes: [
-        {
-          id: 1,
-          name: "ekonomi",
-          price: "1500000.00",
-          available_seats: 100,
-        },
-        {
-          id: 2,
-          name: "bisnis",
-          price: "3000000.00",
-          available_seats: 50,
-        },
-        {
-          id: 3,
-          name: "first class",
-          price: "5000000.00",
-          available_seats: 20,
-        },
-      ],
-    },
-    {
-      id: 2,
-      airline: "Citilink",
-      flight_number: "QG456",
-      origin: {
-        id: 2,
-        code: "DPS",
-        name: "Ngurah Rai International Airport",
-        city: "Denpasar",
-        country: "Indonesia",
-      },
-      destination: {
-        id: 3,
-        code: "SUB",
-        name: "Juanda International Airport",
-        city: "Surabaya",
-        country: "Indonesia",
-      },
-      departure_time: "2025-08-21 13:00:00",
-      arrival_time: "2025-08-21 15:30:00",
-      price: "1200000.00",
-      available_seats: 140,
-      classes: [
-        {
-          id: 1,
-          name: "ekonomi",
-          price: "1200000.00",
-          available_seats: 80,
-        },
-        {
-          id: 2,
-          name: "bisnis",
-          price: "2500000.00",
-          available_seats: 40,
-        },
-        {
-          id: 3,
-          name: "first class",
-          price: "5000000.00",
-          available_seats: 20,
-        },
-      ],
-    },
-    {
-      id: 3,
-      airline: "Batik Air",
-      flight_number: "ID789",
-      origin: {
-        id: 1,
-        code: "CGK",
-        name: "Soekarno-Hatta International Airport",
-        city: "Jakarta",
-        country: "Indonesia",
-      },
-      destination: {
-        id: 2,
-        code: "DPS",
-        name: "Ngurah Rai International Airport",
-        city: "Denpasar",
-        country: "Indonesia",
-      },
-      departure_time: "2025-08-22 09:00:00",
-      arrival_time: "2025-08-22 11:30:00",
-      price: "1400000.00",
-      available_seats: 160,
-      classes: [
-        {
-          id: 1,
-          name: "ekonomi",
-          price: "1400000.00",
-          available_seats: 90,
-        },
-        {
-          id: 2,
-          name: "bisnis",
-          price: "2800000.00",
-          available_seats: 50,
-        },
-        {
-          id: 3,
-          name: "first class",
-          price: "5000000.00",
-          available_seats: 20,
-        },
-      ],
-    },
-  ]);
-
-  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [flights, setFlights] = useState([])
+  const [airports, setAirports] = useState([])
+  const [showForm, setShowForm] = useState(false)
+  // State baru untuk melacak ID penerbangan yang sedang diedit
+  const [editingId, setEditingId] = useState(null)
   const [newFlight, setNewFlight] = useState({
     airline: "",
     flight_number: "",
@@ -241,37 +29,87 @@ const Flights = () => {
     },
     departure_time: "",
     arrival_time: "",
-    available_seats: "",
     classes: [
-      {
-        id: 1,
-        name: "ekonomi",
-        price: "",
-        available_seats: "",
-      },
-      {
-        id: 2,
-        name: "bisnis",
-        price: "",
-        available_seats: "",
-      },
-      {
-        id: 3,
-        name: "first class",
-        price: "",
-        available_seats: "",
-      },
+      { id: 1, name: "ekonomi", price: "", available_seats: "" },
+      { id: 2, name: "bisnis", price: "", available_seats: "" },
+      { id: 3, name: "first class", price: "", available_seats: "" },
     ],
-  });
+  })
+
+  const fetchFlights = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await axios.get("http://localhost:8000/api/public/flights")
+      if (response.data.meta.code === 200) {
+        setFlights(response.data.data)
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to fetch flights data")
+      console.error("Error fetching flights:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchAirports = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/public/airports")
+      if (response.data.meta.code === 200) {
+        setAirports(response.data.data)
+      }
+    } catch (err) {
+      console.error("Error fetching airports:", err)
+      setError(err.response?.data?.message || "Failed to fetch airports data")
+    }
+  }
+
+  useEffect(() => {
+    fetchFlights()
+    fetchAirports()
+  }, [])
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus penerbangan ini?")) {
+      try {
+        const response = await axios.delete(`http://localhost:8000/api/flights/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        if (response.data.meta.code === 200) {
+          await fetchFlights()
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || "Gagal menghapus penerbangan")
+        console.error("Error deleting flight:", err)
+      }
+    }
+  }
+
+  // Perbaikan: tambahkan setEditingId(id)
+  const handleEdit = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/flights/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      if (response.data.meta.code === 200) {
+        setEditingId(id)
+        setNewFlight(response.data.data)
+        setShowForm(true)
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Gagal memuat data penerbangan")
+      console.error("Error fetching flight details:", err)
+    }
+  }
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Handle airport selection
+    const { name, value } = e.target
     if (name === "origin" || name === "destination") {
-      const selectedAirport = airports.find(
-        (airport) => airport.code === value
-      );
+      const selectedAirport = airports.find((airport) => airport.code === value)
       if (selectedAirport) {
         setNewFlight((prev) => ({
           ...prev,
@@ -282,39 +120,41 @@ const Flights = () => {
             city: selectedAirport.city,
             country: selectedAirport.country,
           },
-        }));
+        }))
       }
     } else if (name.includes(".")) {
-      const [parent, child] = name.split(".");
+      const [parent, index, field] = name.split(".")
       if (parent === "classes") {
-        const [_, index, field] = name.split(".");
-        const updatedClasses = [...newFlight.classes];
+        const updatedClasses = [...newFlight.classes]
         updatedClasses[index] = {
           ...updatedClasses[index],
           [field]: value,
-        };
+        }
         setNewFlight({
           ...newFlight,
           classes: updatedClasses,
-        });
+        })
       } else {
         setNewFlight({
           ...newFlight,
           [parent]: {
             ...newFlight[parent],
-            [child]: value,
+            [field]: value,
           },
-        });
+        })
       }
     } else {
-      setNewFlight({ ...newFlight, [name]: value });
+      setNewFlight({
+        ...newFlight,
+        [name]: value,
+      })
     }
-  };
+  }
 
+  // Perbaikan: Tambahkan logika untuk POST dan PUT
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      // Format the data according to the API requirements
       const formattedData = {
         airline: newFlight.airline,
         flight_number: newFlight.flight_number,
@@ -327,46 +167,80 @@ const Flights = () => {
           price: cls.price,
           available_seats: cls.available_seats,
         })),
-      };
+      }
 
-      const response = await axios.post(
-        "http://localhost:8000/api/flights",
-        formattedData,
-        {
+      if (editingId) {
+        // Mode EDIT: Gunakan PUT untuk memperbarui
+        await axios.put(`http://localhost:8000/api/flights/${editingId}`, formattedData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
-        }
-      );
-
-      if (response.data.meta.code === 200) {
-        await fetchFlights(); // Refresh the flights list
-        setShowForm(false);
-        // Clear any existing errors
-        setError(null);
+        })
+      } else {
+        // Mode TAMBAH: Gunakan POST untuk membuat data baru
+        await axios.post("http://localhost:8000/api/flights", formattedData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        })
       }
-    } catch (err) {
-      // Handle validation errors
-      if (err.response?.status === 422) {
-        const validationErrors = err.response.data.errors;
-        const errorMessage = err.response.data.message;
 
-        // Set a user-friendly error message
+      await fetchFlights()
+      setShowForm(false)
+      setError(null)
+    } catch (err) {
+      if (err.response?.status === 422) {
+        const validationErrors = err.response.data.errors
+        const errorMessage = err.response.data.message
         setError(
           errorMessage ||
-            Object.values(validationErrors || {})
-              .flat()
-              .join(", ") ||
-            "Validation failed. Please check your input."
-        );
+          Object.values(validationErrors || {})
+            .flat()
+            .join(", ") ||
+          "Validation failed. Please check your input.",
+        )
       } else {
-        setError("Failed to add new flight. Please try again later.");
+        setError("Failed to add/update flight. Please try again later.")
       }
-      console.error("Error adding flight:", err);
+      console.error("Error adding/updating flight:", err)
+    } finally {
+      // Reset state form setelah selesai
+      setNewFlight({
+        airline: "",
+        flight_number: "",
+        origin: {
+          id: "",
+          code: "",
+          name: "",
+          city: "",
+          country: "Indonesia",
+        },
+        destination: {
+          id: "",
+          code: "",
+          name: "",
+          city: "",
+          country: "Indonesia",
+        },
+        departure_time: "",
+        arrival_time: "",
+        classes: [
+          { id: 1, name: "ekonomi", price: "", available_seats: "" },
+          { id: 2, name: "bisnis", price: "", available_seats: "" },
+          { id: 3, name: "first class", price: "", available_seats: "" },
+        ],
+      })
+      setEditingId(null) // Reset editingId
     }
+  }
 
-    // Reset form
+  // Tampilan UI lainnya tetap sama...
+  // ...
+  // Modifikasi untuk tombol "Tambah" agar mereset editingId
+  const handleOpenForm = () => {
+    setEditingId(null);
     setNewFlight({
       airline: "",
       flight_number: "",
@@ -386,598 +260,507 @@ const Flights = () => {
       },
       departure_time: "",
       arrival_time: "",
-      available_seats: "",
       classes: [
-        {
-          id: 1,
-          name: "ekonomi",
-          price: "",
-          available_seats: "",
-        },
-        {
-          id: 2,
-          name: "bisnis",
-          price: "",
-          available_seats: "",
-        },
-        {
-          id: 3,
-          name: "first class",
-          price: "",
-          available_seats: "",
-        },
+        { id: 1, name: "ekonomi", price: "", available_seats: "" },
+        { id: 2, name: "bisnis", price: "", available_seats: "" },
+        { id: 3, name: "first class", price: "", available_seats: "" },
       ],
-    });
+    })
+    setShowForm(true);
   };
-
+  
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Manajemen Penerbangan
-        </h1>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Tambah Penerbangan
-        </button>
-      </div>
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 h-full">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0 z-40">
+        <div className="p-4">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-md">
+                <Plane className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                  Manajemen Penerbangan
+                </h1>
+                <p className="text-sm text-gray-600">Kelola semua penerbangan dengan mudah</p>
+              </div>
+            </div>
 
-      {/* Filter and Search */}
-      <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            type="text"
-            placeholder="Cari penerbangan..."
-            className="border rounded-lg px-4 py-2"
-          />
-          <select className="border rounded-lg px-4 py-2">
-            <option value="">Semua Maskapai</option>
-            <option value="garuda">Garuda Indonesia</option>
-            <option value="lion">Lion Air</option>
-            <option value="citilink">Citilink</option>
-          </select>
-          <select className="border rounded-lg px-4 py-2">
-            <option value="">Semua Status</option>
-            <option value="active">Aktif</option>
-            <option value="full">Penuh</option>
-            <option value="cancelled">Dibatalkan</option>
-          </select>
-        </div>
-      </div>
+            <div className="flex gap-3">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-3 rounded-lg border border-green-200/50">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs font-medium text-green-700">{flights.length} Penerbangan Aktif</span>
+                </div>
+              </div>
 
-      {/* Loading and Error States */}
-      {loading && (
-        <div className="flex justify-center items-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-2">Loading...</span>
-        </div>
-      )}
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-
-      {/* Flights Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                No. Penerbangan
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Maskapai
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Rute
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Waktu
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Kursi Tersedia
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Kelas & Harga
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {flights.map((flight) => (
-              <tr key={flight.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">
-                    {flight.flight_number}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">{flight.airline}</div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm">
-                    <p className="text-gray-900">
-                      {flight.origin.city} ({flight.origin.code})
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      {flight.origin.name}
-                    </p>
-                    <p className="text-gray-900 mt-1">
-                      {flight.destination.city} ({flight.destination.code})
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      {flight.destination.name}
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm">
-                    <p className="text-gray-900">
-                      {new Date(flight.departure_time).toLocaleTimeString(
-                        "id-ID",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )}
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      {new Date(flight.departure_time).toLocaleDateString(
-                        "id-ID"
-                      )}
-                    </p>
-                    <p className="text-gray-900 mt-1">
-                      {new Date(flight.arrival_time).toLocaleTimeString(
-                        "id-ID",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )}
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      {new Date(flight.arrival_time).toLocaleDateString(
-                        "id-ID"
-                      )}
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">
-                    {flight.available_seats} kursi
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm space-y-1">
-                    {flight.classes.map((cls) => (
-                      <div key={cls.id} className="flex justify-between">
-                        <span className="text-gray-500 capitalize">
-                          {cls.name}
-                        </span>
-                        <span className="text-gray-900">
-                          Rp {parseInt(cls.price).toLocaleString("id-ID")}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(flight.id)}
-                      className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(flight.id)}
-                      className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-6">
-        <p className="text-sm text-gray-600">
-          Menampilkan {flights.length} dari {flights.length} penerbangan
-        </p>
-      </div>
-
-      {/* Modal Tambah Penerbangan */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center overflow-y-auto z-50">
-          <div className="bg-white p-6 rounded-xl shadow-2xl w-[800px] my-8 max-h-[90vh] overflow-y-auto relative">
-            {/* Close Button */}
-            <button
-              onClick={() => setShowForm(false)}
-              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <button
+                onClick={handleOpenForm}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg hover:from-indigo-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+                <Plus className="w-4 h-4" />
+                <span className="text-sm font-medium">Tambah</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="border-b border-gray-200 pb-4">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Tambah Penerbangan Baru
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">
-                  Isi detail penerbangan dengan lengkap
-                </p>
+      <div className="p-4">
+        <div className="bg-white/70 backdrop-blur-sm p-4 rounded-xl shadow-md border border-white/20 mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter className="w-4 h-4 text-gray-600" />
+            <h3 className="text-sm font-semibold text-gray-800">Filter & Pencarian</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Cari nomor penerbangan..."
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-200"
+              />
+            </div>
+
+            <select className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-200">
+              <option value="">🛫 Semua Maskapai</option>
+              <option value="garuda">🦅 Garuda Indonesia</option>
+              <option value="lion">🦁 Lion Air</option>
+              <option value="citilink">🔗 Citilink</option>
+            </select>
+
+            <select className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-200">
+              <option value="">📊 Semua Status</option>
+              <option value="active">✅ Aktif</option>
+              <option value="full">🔴 Penuh</option>
+              <option value="cancelled">❌ Dibatalkan</option>
+            </select>
+          </div>
+        </div>
+
+        {loading && (
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-8">
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-8 w-8 border-3 border-blue-200"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-3 border-blue-600 border-t-transparent absolute top-0"></div>
               </div>
+              <p className="mt-3 text-sm text-gray-600 font-medium">Memuat data penerbangan...</p>
+            </div>
+          </div>
+        )}
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <svg
-                        className="h-5 w-5 text-red-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-red-800">
-                        Error
-                      </h3>
-                      <div className="mt-2 text-sm text-red-700">{error}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Maskapai
-                  </label>
-                  <input
-                    name="airline"
-                    value={newFlight.airline}
-                    onChange={handleChange}
-                    className="border rounded-lg px-4 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Nama Maskapai"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nomor Penerbangan
-                  </label>
-                  <input
-                    name="flight_number"
-                    value={newFlight.flight_number}
-                    onChange={handleChange}
-                    className="border rounded-lg px-4 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Contoh: GA123"
-                  />
-                </div>
+        {error && (
+          <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-3 mb-4 shadow-md">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                <span className="text-red-600 text-sm font-bold">!</span>
               </div>
+              <div>
+                <h4 className="text-sm font-semibold text-red-800">Terjadi Kesalahan</h4>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
-              <div className="grid grid-cols-2 gap-6">
-                {/* Origin Section */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4">
-                  <div className="bg-white rounded-lg p-4 shadow-sm space-y-4">
-                    <div className="flex items-center space-x-2 text-blue-600">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                        />
-                      </svg>
-                      <h3 className="font-semibold">Bandara Asal</h3>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm text-gray-600 block mb-1">
-                          Pilih Bandara Asal
-                        </label>
-                        <div className="relative">
-                          <select
-                            name="origin"
-                            value={newFlight.origin.code}
-                            onChange={handleChange}
-                            className="w-full border rounded-lg px-4 py-2 appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            required
-                          >
-                            <option value="">Pilih bandara asal</option>
-                            {airports.map((airport) => (
-                              <option key={airport.id} value={airport.code}>
-                                {airport.city} ({airport.code}) - {airport.name}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                            <svg
-                              className="w-5 h-5 text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </div>
+        <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-white/20">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
+                <tr>
+                  {[
+                    { label: "No. Penerbangan", icon: "✈️" },
+                    { label: "Maskapai", icon: "🏢" },
+                    { label: "Rute", icon: "🗺️" },
+                    { label: "Waktu", icon: "⏰" },
+                    { label: "Kursi", icon: "💺" },
+                    { label: "Kelas & Harga", icon: "💰" },
+                    { label: "Aksi", icon: "⚙️" },
+                  ].map((head, i) => (
+                    <th key={i} className="px-4 py-3 text-left text-xs font-bold text-gray-700 tracking-wide">
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm">{head.icon}</span>
+                        <span className="text-xs">{head.label}</span>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {flights.map((flight, idx) => (
+                  <tr
+                    key={flight.id}
+                    className={`hover:bg-blue-50/50 transition-all duration-200 ${
+                      idx % 2 === 0 ? "bg-white/50" : "bg-gray-50/30"
+                    }`}
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-md flex items-center justify-center">
+                          <Plane className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-gray-900">{flight.flight_number}</p>
+                          <p className="text-xs text-gray-500">Flight Number</p>
                         </div>
                       </div>
-                      <div>
-                        <label className="text-sm text-gray-600 block mb-1">
-                          Kota
-                        </label>
-                        <input
-                          value={newFlight.origin.city}
-                          className="border rounded-lg px-4 py-2 w-full bg-gray-50"
-                          readOnly
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-600 block mb-1">
-                          Nama Bandara
-                        </label>
-                        <input
-                          value={newFlight.origin.name}
-                          onChange={handleChange}
-                          className="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Soekarno-Hatta International Airport"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    </td>
 
-                {/* Destination Section */}
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4">
-                  <div className="bg-white rounded-lg p-4 shadow-sm space-y-4">
-                    <div className="flex items-center space-x-2 text-purple-600">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      <h3 className="font-semibold">Bandara Tujuan</h3>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm text-gray-600 block mb-1">
-                          Pilih Bandara Tujuan
-                        </label>
-                        <div className="relative">
-                          <select
-                            name="destination"
-                            value={newFlight.destination.code}
-                            onChange={handleChange}
-                            className="w-full border rounded-lg px-4 py-2 appearance-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            required
-                          >
-                            <option value="">Pilih bandara tujuan</option>
-                            {airports.map((airport) => (
-                              <option key={airport.id} value={airport.code}>
-                                {airport.city} ({airport.code}) - {airport.name}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                            <svg
-                              className="w-5 h-5 text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </div>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">{flight.airline.charAt(0)}</span>
                         </div>
+                        <span className="text-sm font-semibold text-gray-800">{flight.airline}</span>
                       </div>
-                      <div>
-                        <label className="text-sm text-gray-600 block mb-1">
-                          Kota
-                        </label>
-                        <input
-                          value={newFlight.destination.city}
-                          className="border rounded-lg px-4 py-2 w-full bg-gray-50"
-                          readOnly
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-600 block mb-1">
-                          Nama Bandara
-                        </label>
-                        <input
-                          value={newFlight.destination.name}
-                          onChange={handleChange}
-                          className="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                          placeholder="Ngurah Rai International Airport"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </td>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Waktu Keberangkatan
-                  </label>
-                  <input
-                    type="datetime-local"
-                    name="departure_time"
-                    value={newFlight.departure_time}
-                    onChange={handleChange}
-                    className="border rounded-lg px-4 py-2 w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Waktu Kedatangan
-                  </label>
-                  <input
-                    type="datetime-local"
-                    name="arrival_time"
-                    value={newFlight.arrival_time}
-                    onChange={handleChange}
-                    className="border rounded-lg px-4 py-2 w-full"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
-                <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <div className="flex items-center space-x-2 text-gray-700 mb-4">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                    <h3 className="font-semibold">Kelas Penerbangan & Harga</h3>
-                  </div>
-
-                  <div className="space-y-4">
-                    {newFlight.classes.map((cls, index) => (
-                      <div
-                        key={cls.id}
-                        className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:border-blue-200 transition-colors"
-                      >
-                        <div className="flex items-center mb-3">
-                          <span
-                            className={`inline-block w-3 h-3 rounded-full mr-2 ${
-                              cls.name === "ekonomi"
-                                ? "bg-green-400"
-                                : cls.name === "bisnis"
-                                ? "bg-blue-400"
-                                : "bg-purple-400"
-                            }`}
-                          ></span>
-                          <h4 className="font-medium text-gray-700 capitalize">
-                            {cls.name}
-                          </h4>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
+                    <td className="px-4 py-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-green-600" />
                           <div>
-                            <label className="text-sm text-gray-600 block mb-1">
-                              Harga
-                            </label>
-                            <div className="relative">
-                              <span className="absolute left-3 top-2 text-gray-500">
-                                Rp
+                            <p className="text-sm font-bold text-gray-900">
+                              {flight.origin.city} ({flight.origin.code})
+                            </p>
+                            <p className="text-xs text-gray-500 truncate max-w-[150px]">{flight.origin.name}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-center">
+                          <div className="w-6 border-t border-dashed border-gray-300"></div>
+                          <Plane className="w-3 h-3 text-blue-500 mx-1" />
+                          <div className="w-6 border-t border-dashed border-gray-300"></div>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-red-600" />
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">
+                              {flight.destination.city} ({flight.destination.code})
+                            </p>
+                            <p className="text-xs text-gray-500 truncate max-w-[150px]">{flight.destination.name}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="space-y-2">
+                        <div className="bg-green-50 p-2 rounded-md border border-green-200">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-green-600" />
+                            <span className="text-xs font-medium text-green-800">Berangkat</span>
+                          </div>
+                          <p className="text-sm font-bold text-green-900">
+                            {new Date(flight.departure_time).toLocaleTimeString("id-ID", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                          <p className="text-xs text-green-600">
+                            {new Date(flight.departure_time).toLocaleDateString("id-ID")}
+                          </p>
+                        </div>
+
+                        <div className="bg-blue-50 p-2 rounded-md border border-blue-200">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-blue-600" />
+                            <span className="text-xs font-medium text-blue-800">Tiba</span>
+                          </div>
+                          <p className="text-sm font-bold text-blue-900">
+                            {new Date(flight.arrival_time).toLocaleTimeString("id-ID", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                          <p className="text-xs text-blue-600">
+                            {new Date(flight.arrival_time).toLocaleDateString("id-ID")}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <Users className="w-4 h-4 text-indigo-600" />
+                        <div>
+                          <p className="text-lg font-bold text-indigo-900">{flight.available_seats}</p>
+                          <p className="text-xs text-gray-600">kursi</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="space-y-1">
+                        {flight.classes.map((cls) => (
+                          <div
+                            key={cls.id}
+                            className={`p-2 rounded-md border ${
+                              cls.name === "ekonomi"
+                                ? "bg-green-50 border-green-200"
+                                : cls.name === "bisnis"
+                                  ? "bg-blue-50 border-blue-200"
+                                  : "bg-purple-50 border-purple-200"
+                            }`}
+                          >
+                            <div className="flex justify-between items-center">
+                              <span
+                                className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                                  cls.name === "ekonomi"
+                                    ? "bg-green-100 text-green-800"
+                                    : cls.name === "bisnis"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : "bg-purple-100 text-purple-800"
+                                }`}
+                              >
+                                {cls.name.toUpperCase()}
                               </span>
-                              <input
-                                type="number"
-                                name={`classes.${index}.price`}
-                                value={cls.price}
-                                onChange={handleChange}
-                                className="border rounded-lg pl-12 pr-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="1000000"
-                                min="0"
-                                required
-                              />
+                              <span className="text-xs font-bold text-gray-900">
+                                Rp {Number.parseInt(cls.price).toLocaleString("id-ID")}
+                              </span>
                             </div>
                           </div>
-                          <div>
-                            <label className="text-sm text-gray-600 block mb-1">
-                              Jumlah Kursi
-                            </label>
-                            <input
-                              type="number"
-                              name={`classes.${index}.available_seats`}
-                              value={cls.available_seats}
-                              onChange={handleChange}
-                              className="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="100"
-                              min="1"
-                              required
-                            />
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleEdit(flight.id)}
+                          className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-all duration-200 transform hover:scale-110"
+                          title="Edit Penerbangan"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(flight.id)}
+                          className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-all duration-200 transform hover:scale-110"
+                          title="Hapus Penerbangan"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mt-4 bg-white/50 backdrop-blur-sm p-3 rounded-lg">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <p className="text-sm text-gray-700">
+              Menampilkan <span className="font-bold text-blue-600">{flights.length}</span> penerbangan aktif
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-gray-600">
+            <Clock className="w-3 h-3" />
+            <span>Terakhir diperbarui: {new Date().toLocaleTimeString("id-ID")}</span>
+          </div>
+        </div>
+      </div>
+
+      {showForm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center overflow-y-auto z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl my-8 max-h-[90vh] overflow-y-auto relative transform transition-all duration-300 scale-100">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <Plus className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">{editingId ? "Edit Penerbangan" : "Tambah Penerbangan Baru"}</h2>
+                    <p className="text-blue-100">Lengkapi informasi penerbangan di bawah ini</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingId(null); 
+                  }}
+                  className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
+                >
+                  <span className="text-white text-xl">×</span>
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <div className="bg-gray-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Plane className="w-5 h-5 text-blue-600" />
+                  Informasi Dasar Penerbangan
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Maskapai</label>
+                    <input
+                      type="text"
+                      name="airline"
+                      value={newFlight.airline}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Contoh: Garuda Indonesia"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nomor Penerbangan</label>
+                    <input
+                      type="text"
+                      name="flight_number"
+                      value={newFlight.flight_number}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Contoh: GA123"
+                      required
+                    />
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t">
+              {/* Route Information */}
+              <div className="bg-blue-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-blue-600" />
+                  Informasi Rute
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Bandara Asal</label>
+                    <select
+                      name="origin"
+                      value={newFlight.origin.code}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    >
+                      <option value="">Pilih Bandara Asal</option>
+                      {airports.map((airport) => (
+                        <option key={airport.id} value={airport.code}>
+                          {airport.city} ({airport.code}) - {airport.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Bandara Tujuan</label>
+                    <select
+                      name="destination"
+                      value={newFlight.destination.code}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    >
+                      <option value="">Pilih Bandara Tujuan</option>
+                      {airports.map((airport) => (
+                        <option key={airport.id} value={airport.code}>
+                          {airport.city} ({airport.code}) - {airport.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Time Information */}
+              <div className="bg-green-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-green-600" />
+                  Jadwal Penerbangan
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Waktu Keberangkatan</label>
+                    <input
+                      type="datetime-local"
+                      name="departure_time"
+                      value={newFlight.departure_time}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Waktu Kedatangan</label>
+                    <input
+                      type="datetime-local"
+                      name="arrival_time"
+                      value={newFlight.arrival_time}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+
+              <div className="bg-purple-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-purple-600" />
+                  Informasi Kelas & Harga
+                </h3>
+                <div className="space-y-4">
+                  {newFlight.classes.map((cls, index) => (
+                    <div key={cls.id} className="bg-white p-4 rounded-lg border border-gray-200">
+                      <h4 className="font-medium text-gray-800 mb-3 capitalize">Kelas {cls.name}</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label>
+                          <input
+                            type="number"
+                            name={`classes.${index}.price`}
+                            value={cls.price}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            placeholder="0"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Kursi Tersedia</label>
+                          <input
+                            type="number"
+                            name={`classes.${index}.available_seats`}
+                            value={cls.available_seats}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            placeholder="0"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
-                  className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-300"
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingId(null);
+                  }}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-indigo-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
-                  Simpan Penerbangan
+                  {editingId ? "Perbarui Penerbangan" : "Simpan Penerbangan"}
                 </button>
               </div>
             </form>
@@ -985,7 +768,7 @@ const Flights = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Flights;
+export default Flights
